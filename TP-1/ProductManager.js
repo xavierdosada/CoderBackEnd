@@ -7,6 +7,7 @@ class ProductManager {
     addProduct(title,description,price,url,code,stock){
         if (title && description && price && url && code && stock) {
             const verificationCode = this.products.some(product => product.code === code)
+            console.log({verificationCode})
             if (verificationCode){
                 console.error("ERROR: El codigo esta repetido")
             } else {
@@ -38,5 +39,5 @@ const pManager = new ProductManager()
 pManager.addProduct("Fideos", "con tuco", 20, "url", 123, 25);
 pManager.addProduct("Fideos", "con tuco", 20, "url", 124, 25);
 pManager.addProduct("Fideos", "con tuco", 20, "url", 125, 25);
-pManager.addProduct("Fideos", "con tuco", 20, "url", 126, 25);
-pManager.getProductById(22);
+pManager.addProduct("Fideos", "con tuco", 20, "url", 125, 25);
+pManager.getProductById(1);
