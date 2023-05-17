@@ -80,7 +80,6 @@ class ProductManager {
         const existID = this.products.findIndex(product => product.id === id);
         if (existID !== -1){
             this.products.splice(existID, 1)
-            console.log("this.products", this.products)
             await this.saveProducts()
         } else {
             throw new Error("Not Found")
