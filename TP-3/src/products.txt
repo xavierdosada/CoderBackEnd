@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "title": "queso",
+    "description": "cremoso",
+    "price": 200,
+    "thumbail": "url",
+    "code": 2345,
+    "stock": 3000
+  },
+  {
+    "id": 2,
+    "title": "fideos",
+    "description": "tallarin",
+    "price": 100,
+    "thumbail": "url",
+    "code": 1345,
+    "stock": 1000
+  },
+  {
+    "id": 3,
+    "title": "atun",
+    "description": "desmenuzado",
+    "price": 220,
+    "thumbail": "url",
+    "code": 4345,
+    "stock": 500
+  },
+  {
+    "id": 4,
+    "title": "arvejas",
+    "description": "en lata",
+    "price": 304,
+    "thumbail": "url",
+    "code": 3345,
+    "stock": 2000
+  },
+  {
+    "id": 5,
+    "title": "queso",
+    "description": "azul",
+    "price": 500,
+    "thumbail": "url",
+    "code": 6345,
+    "stock": 2300
+  },
+  {
+    "id": 6,
+    "title": "torta",
+    "description": "dulce de leche",
+    "price": 600,
+    "thumbail": "url",
+    "code": 5345,
+    "stock": 700
+  },
+  {
+    "id": 7,
+    "title": "crema",
+    "description": "chantilly",
+    "price": 400,
+    "thumbail": "url",
+    "code": 7145,
+    "stock": 100
+  },
+  {
+    "id": 8,
+    "title": "palta",
+    "description": "verde",
+    "price": 400,
+    "thumbail": "url",
+    "code": 7341,
+    "stock": 100
+  },
+  {
+    "id": 9,
+    "title": "turron",
+    "description": "mani",
+    "price": 80,
+    "thumbail": "url",
+    "code": 7315,
+    "stock": 100
+  },
+  {
+    "id": 10,
+    "title": "azucar",
+    "description": "mascabo",
+    "price": 70,
+    "thumbail": "url",
+    "code": 7325,
+    "stock": 100
+  }
+]
