@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "title": "Queso",
+    "description": "cremoso",
+    "price": 300,
+    "code": "11111",
+    "stock": 1000
+  }
+]
