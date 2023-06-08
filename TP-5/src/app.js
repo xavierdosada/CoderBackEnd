@@ -23,11 +23,3 @@ app.use(express.urlencoded({extended:true}))
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartsRouter)
 app.use('/', viewsRouter)
-
-io.on('connection', (socket) => {
-    console.log('Cliente conectado en el back', socket.id)
-    socket.on('message', (data) => {
-        console.log(data)
-    })
-})
-

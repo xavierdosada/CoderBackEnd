@@ -106,7 +106,7 @@ export class ProductManager {
             throw new Error("Verifique que price o stock sean de tipo number")
         }
         if ( typeof status !== "boolean"){
-            status = true;
+            this.products[indexID].status = true;
         }
     }
 } 
