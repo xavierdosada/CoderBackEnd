@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "title": "Queso",
+    "description": "roquefort",
+    "price": 5000,
+    "code": "2222",
+    "stock": 1000
+  },
+  {
+    "id": 2,
+    "title": "Paleta",
+    "description": "Calchaqui",
+    "price": 300,
+    "code": "12135",
+    "stock": 1000
+  },
+  {
+    "id": 3,
+    "title": "Auto",
+    "description": "rojo",
+    "price": 5000,
+    "code": "23452",
+    "stock": 1000
+  },
+  {
+    "id": 4,
+    "title": "Salame",
+    "description": "milan",
+    "price": 300,
+    "code": "112135",
+    "stock": 1000
+  }
+]
