@@ -19,5 +19,5 @@ form.addEventListener('submit', (evt) => {
 })
 
 const getCookie = () => {
-    console.log(document.cookie)
+    console.log("document.cookie: ", document.cookie)
 }

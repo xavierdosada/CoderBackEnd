@@ -34,6 +34,7 @@ export const io = new Server(serverMongo)
 const messagesDBM = new messageDBManager();
 
 app.use(express.static(__dirname+'/public'))
+app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(session({

@@ -3,12 +3,32 @@ import local from 'passport-local'
 import userService from '../dao/models/UserModel.js'
 import GitHubStrategy from 'passport-github2'
 import { createHash, isValidPassword } from '../utils.js'
+import jwt from 'passport-jwt';
+import { default as token } from 'jsonwebtoken';
 import sensitiveInfo from '../sensitiveInfo.js'
 
-const { GITHUB_CLIENTID, GITHUB_CLIENTSECRET, GITHUB_CALLBACKURL} = sensitiveInfo;
 
+const { GITHUB_CLIENTID, GITHUB_CLIENTSECRET, GITHUB_CALLBACKURL } = sensitiveInfo;
+const PRIVATE_KEY = 'CoderKey'
+const JWTStrategy = jwt.Strategy;
+const ExtractJWT = jwt.ExtractJwt;
 const localStrategy = local.Strategy
+
+export const generateToken = user =>  token.sign({ user }, PRIVATE_KEY, { expiresIn: '1d' })
+
+
 const initializePassport = () => {
+    passport.use('current', new JWTStrategy({
+        jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
+        secretOrKey: PRIVATE_KEY
+    }, async (jwt_payload, done) => {
+        try {
+            return done(null, jwt_payload)
+        } catch (error) {
+            return done(error)
+        }
+    }))
+
     passport.use('register', new localStrategy({
         usernameField: 'email',
         passReqToCallback: true,
@@ -33,18 +53,19 @@ const initializePassport = () => {
         }
     }));
 
-    passport.use('login', new localStrategy({
-        usernameField: 'email'
-    }, async (username, password, done) => {
+    passport.use('login', new localStrategy({ usernameField: 'email' }, async (username, password, done) => {
         try {
             const user = await userService.findOne({ email: username })
 
             if (!user) return done(null, false, { message: `The user doesn't exist` })
             if (!isValidPassword(user, password)) return done(null, false, { message: `The email and password do not match` })
 
-            return done(null, user)
+            const { password: pass, _id, __v, ...userNoPass } = user._doc
+            const jwt = generateToken(userNoPass)
+
+            return done(null, jwt)
         } catch (error) {
-            return done({ error: `Error login user: ${error.message}` })
+            return done({ error: `Error login user: ${error}` })
         }
     }));
 
@@ -54,14 +75,12 @@ const initializePassport = () => {
         callbackURL: GITHUB_CALLBACKURL
     }, async (accessToken, refreshToken, profile, done) => {
         try {
-            console.log({ profile })
             let user = await userService.findOne({ email: profile._json.email })
-            if (user) return done(null, user)
             const newUser = {
-                first_name: profile._json.first_name,
+                first_name: profile._json.name,
                 last_name: '',
                 email: profile._json.email,
-                age: 10,
+                dob: '',
                 password: ''
             }
             user = await userService.create(newUser)
@@ -88,30 +107,15 @@ const initializePassport = () => {
             done({ error: error.message })
         }
     });
+}
 
-    //ESTRATEGIA CURRENT
-    passport.use('current', new localStrategy({
-        usernameField: 'email',
-        passReqToCallback: true,
-    }, async (req, username, password, done) => {
-        const { first_name, last_name, email, age } = req.body
-        try {
-            let user = await userService.findOne({ email })
-            if (user) return done(null, false, { message: 'The email already exists' })
-            const newUser = {
-                first_name,
-                last_name,
-                email,
-                age,
-                password: createHash(password)
-            }
-            user = await userService.create(newUser)
-            // user = await userService.findOne({ email }) //Vuelvo a buscar el usuario en la bd para obtenerlo con el _id y poder serializarlo
-            return done(null, user)
-        } catch (error) {
-            return done({ message: `There was an error creating the user: ${error.message}` })
-        }
-    }));
+
+const cookieExtractor = (req) => {
+    let token = null;
+    if (req && req.cookies) {
+        return token = req?.cookies['coderCookieToken']
+    }
+    return token
 }
 
 export default initializePassport;
