@@ -33,7 +33,7 @@ router.get('/faillogin', (req, res) => {
 //GITHUB LOGIN
 router.get('/github', passport.authenticate('github', { scope: ['user:email'] }), async (req, res) => { });
 
-router.get('/githubcallback', passport.authenticate('github', {failureRedirect: '/login'}), (req, res) => {
+router.get('/githubcallback', passport.authenticate('github', {failureRedirect: '/api/session/login'}), (req, res) => {
     try {
         req.session.user = req.user
         res.redirect('/products')   
@@ -45,7 +45,7 @@ router.get('/githubcallback', passport.authenticate('github', {failureRedirect: 
 //DELETE SESSION
 router.get('/logout', (req, res) => {
     req.session.destroy( err => {
-        if(!err) res.send('Logout ok')
+        if(!err) res.redirect('/api/session/login')
         else res.send({status: 'Logout ERROR', body: err})
     })
 })

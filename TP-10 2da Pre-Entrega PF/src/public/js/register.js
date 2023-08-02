@@ -13,7 +13,7 @@ form.addEventListener('submit', (evt) => {
         }
     }).then(result => {
         if (result.status === 201){
-            window.location.replace('/login')
+            window.location.replace('/api/session/login')
         }
     });
 });

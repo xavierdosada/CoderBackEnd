@@ -11,7 +11,7 @@ const publicAccess = (req, res, next) => {
     next();
 }
 const privateAccess = (req, res, next) => {
-    if (!req.session.user) return res.redirect('/login');
+    if (!req.session.user) return res.redirect('/api/session/login');
     next();
 }
 
@@ -55,18 +55,18 @@ router.get('/chat', async (req, res) => {
 })
 
 //SESSION VIEWSS
-router.get('/register', publicAccess, (req, res) => {
+router.get('/api/session/register', publicAccess, (req, res) => {
     res.render('register')
 })
 
-router.get('/login', publicAccess, (req, res) => {
+router.get('/api/session/login', publicAccess, (req, res) => {
     res.render('login')
 })
 
-router.get('/logout', (req, res) => {
+router.get('/api/session/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) return res.status(500).send({status: 'error', error: `Couldn't logout: ${err.message}`})
-        res.redirect('/login')
+        res.redirect('/api/session/login')
     })
 })
 
