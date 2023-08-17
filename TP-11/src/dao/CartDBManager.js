@@ -1,5 +1,4 @@
 import cartsModel from './models/cartsModel.js'
-import productsModel from './models/productsModel.js';
 
 export class CartDBManager {
 
@@ -30,22 +29,8 @@ export class CartDBManager {
         }
     }
 
-    async addProductToCart(cid, pid){
+    async saveCart(cart){
         try {
-            const cart = await cartsModel.findById(cid)
-            if(!cart){
-                throw new Error('Cart not found')
-            } 
-            if(!pid){
-                throw new Error('Product ID is required')
-            }
-            const product = await productsModel.findById(pid)
-            if(!product){
-                throw new Error(`Product doesn't exist`)
-            }
-
-            const prodInCart = cart.products.find(prod => prod.product.toString() === pid.toString())
-            prodInCart ? prodInCart.quantity += 1 : cart.products.push({ product: pid, quantity: 1})
             await cart.save();
             return cart;
         } catch(error){
@@ -55,18 +40,6 @@ export class CartDBManager {
 
     async updateQuantityProducts(cid, pid, quantity){
         try {
-            const cart = await cartsModel.findById(cid)
-            if(!cart){
-                throw new Error('Cart not found')
-            } 
-            if(!pid){
-                throw new Error('Product ID is required')
-            }
-            const product = await productsModel.findById(pid)
-            if(!product){
-                throw new Error(`Product doesn't exist`)
-            }
-
             const updateCart = await cartsModel.findByIdAndUpdate(
                 cid, //En el carrito con este ID
                 {$set: {'products.$[elem].quantity': quantity}}, //Actualizo el quantity
@@ -84,17 +57,6 @@ export class CartDBManager {
 
     async deleteProductInCart(cid, pid){
         try {
-            if(!cid){
-                throw new Error('Cart ID is required')
-            }
-            if(!pid){
-                throw new Error('Product ID is required')
-            }
-            const product = await productsModel.findById(pid)
-            if(!product){
-                throw new Error(`Product doesn't exist`)
-            }
-
             const updatedCart = await cartsModel.findByIdAndUpdate( 
                 cid, {$pull: {products: pid}}, //Elimino el producto del carrito
                 {new: true} // Devuelve el carrito actualizado despues de la eliminación
@@ -108,10 +70,6 @@ export class CartDBManager {
 
     async deleteAllProducts(cid){
         try {
-            if(!cid){
-                throw new Error('Cart ID is required')
-            }
-
             const emptyCart = await cartsModel.findByIdAndUpdate( 
                 cid, {$set: {products: []}}, //Elimino todos los productos, seteando un arraglo vacio
                 {new: true} // Devuelve el carrito actualizado despues de la eliminación

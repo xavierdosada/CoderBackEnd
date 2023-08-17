@@ -5,5 +5,4 @@
 /.pnp
 .pnp.js
 /.vscode
-/sensitiveINFO
 .env

@@ -1,23 +1,10 @@
 import productsModel from "./models/productsModel.js";
 
 export class ProductDBManager {
-    // constructor() {
-    //     this.products = productsModel;
-    // }
-
     async addProduct(newProduct){
         try {
-            //Cargo los datos del archivo
-            const {title, description, code, price, status, stock, category} = newProduct;
-            //valido que no se repita el campo code y que todos los campos sean obligatorios
-            if (title && description && code && price && status && stock && category){
-                this.validateTypeof(title, description, code, price, status, stock, category);
-                const product = await productsModel.findOne({ code: code })
-                const prodAdded = product? ('Code ya existe') : await productsModel.create(newProduct)
-                return { prodAdded }
-            } else {
-                throw new Error("Faltan campos");
-            }
+            const prodAdded = await productsModel.create(newProduct)
+            return prodAdded
         }catch(error){
             return new Error({error: error.message})
         }
@@ -41,6 +28,15 @@ export class ProductDBManager {
         }
     }
 
+    async getProductByCode(code){
+        try{
+            const product = await productsModel.findOne({ code: code })
+            return product
+        }catch(error){
+            return new Error({error: error.message})
+        }
+    }
+
     async updateProduct(id, data){
         try{
             const updatedProduct = await productsModel.updateOne({_id: id}, data)
@@ -56,26 +52,6 @@ export class ProductDBManager {
             return deletedProd
         }catch(error){
             return new Error({error: error.message})
-        }
-    }
-
-    validateTypeof(title, description, code, price, status, stock, category){
-        if ( 
-            typeof title        !== "string" || 
-            typeof description  !== "string" || 
-            typeof code         !== "string" || 
-            typeof category     !== "string"
-        ){
-            throw new Error("Verifique que title, description, code o category sean de tipo string")
-        }
-        if ( 
-            typeof price !== "number" || 
-            typeof stock !== "number"
-        ){
-            throw new Error("Verifique que price o stock sean de tipo number")
-        }
-        if ( typeof status !== "boolean"){
-            this.products[indexID].status = true;
         }
     }
 } 

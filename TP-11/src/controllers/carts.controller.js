@@ -1,6 +1,8 @@
 import { CartDBManager } from '../dao/CartDBManager.js'
+import { ProductDBManager } from '../dao/ProductDBManager.js';
 
 const cartDBManager = new CartDBManager()
+const productDBManager = new ProductDBManager()
 
 export const getCarts = async (req, res) => {
     try {
@@ -37,7 +39,27 @@ export const addProductToCart = async (req, res) => {
     const { cid } = req.params
     const { pid } = req.params
     try {
-        const statusAdd = await cartDBManager.addProductToCart(cid, pid)
+        if(!cid){
+            throw new Error('Cart ID is required')
+        }
+        if(!pid){
+            throw new Error('Product ID is required')
+        }
+
+        const cart = await cartDBManager.getCartsById(cid);
+        if(!cart){
+            throw new Error('Cart not found')
+        } 
+
+        const product = await productDBManager.getProductById(pid)
+        if(!product){
+            throw new Error(`Product doesn't exist`)
+        }
+
+        const prodInCart = cart.products.find(prod => prod.product._id.toString() === pid)
+        prodInCart ? prodInCart.quantity += 1 : cart.products.push({ product: pid, quantity: 1})
+
+        const statusAdd = await cartDBManager.saveCart(cart)
         res.status(200).send({message: statusAdd, status: 'success'})
     } catch(error){
         res.status(400).send({error: error.message})
@@ -48,6 +70,24 @@ export const updateQuantityProducts = async (req, res) => {
     try{
         const { cid, pid } = req.params
         const { quantity } = req.body
+
+        if(!cid){
+            throw new Error('Cart ID is required')
+        }
+        if(!pid){
+            throw new Error('Product ID is required')
+        }
+
+        const cart = await cartDBManager.getCartsById(cid);
+        if(!cart){
+            throw new Error('Cart not found')
+        } 
+
+        const product = await productDBManager.getProductById(pid)
+        if(!product){
+            throw new Error(`Product doesn't exist`)
+        }
+
         const result = await cartDBManager.updateQuantityProducts(cid, pid, quantity)
         res.status(200).send(result)
     }catch(error){
@@ -58,6 +98,24 @@ export const updateQuantityProducts = async (req, res) => {
 export const deleteProductInCart = async (req, res) => {
     try{
         const { cid, pid } = req.params
+
+        if(!cid){
+            throw new Error('Cart ID is required')
+        }
+        if(!pid){
+            throw new Error('Product ID is required')
+        }
+
+        const cart = await cartDBManager.getCartsById(cid);
+        if(!cart){
+            throw new Error('Cart not found')
+        } 
+
+        const product = await productDBManager.getProductById(pid)
+        if(!product){
+            throw new Error(`Product doesn't exist`)
+        }
+
         const result = await cartDBManager.deleteProductInCart(cid, pid)
         res.status(204).send(result)
     }catch(error){
@@ -68,6 +126,11 @@ export const deleteProductInCart = async (req, res) => {
 export const deleteAllProducts = async (req, res) => {
     try{
         const { cid } = req.params
+
+        if(!cid){
+            throw new Error('Cart ID is required')
+        }
+
         const result = await cartDBManager.deleteAllProducts(cid)
         res.status(204).send(result)
     }catch(error){
