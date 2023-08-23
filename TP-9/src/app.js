@@ -1,7 +1,7 @@
 import express from "express";
 import handlebars from 'express-handlebars'
 import mongoose from "mongoose";
-import sensitiveInfo from "./mongoDBsensitiveInfo.js";
+import sensitiveInfo from "./sensitiveInfo.js";
 import __dirname from './utils.js'
 import { Server } from 'socket.io'
 import { messageDBManager } from "./dao/messagesDBManager.js";

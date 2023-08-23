@@ -3,7 +3,7 @@ import local from 'passport-local'
 import userService from '../dao/models/usersModel.js'
 import GitHubStrategy from 'passport-github2'
 import { createHash, isValidPassword } from '../utils.js'
-import sensitiveInfo from '../mongoDBsensitiveInfo.js'
+import sensitiveInfo from '../sensitiveInfo.js'
 
 const { GITHUB_CLIENTID, GITHUB_CLIENTSECRET, GITHUB_CALLBACKURL} = sensitiveInfo;
 

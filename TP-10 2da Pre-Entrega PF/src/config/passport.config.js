@@ -14,7 +14,7 @@ const JWTStrategy = jwt.Strategy;
 const ExtractJWT = jwt.ExtractJwt;
 const localStrategy = local.Strategy
 
-export const generateToken = user =>  token.sign({ user }, PRIVATE_KEY, { expiresIn: '1d' })
+export const generateToken = user => token.sign({ user }, PRIVATE_KEY, { expiresIn: '1d' })
 
 
 const initializePassport = () => {
