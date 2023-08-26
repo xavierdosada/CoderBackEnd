@@ -1,4 +1,5 @@
 import userDTO from "../dao/dtos/user.dto.js"
+import { UserMongoMgr } from "../dao/mongo/user.mongo.js"
 
 export const register = async (req, res) => {
     res.status(201).send({ status: 'success', message: "The user has been registered" })
@@ -55,5 +56,19 @@ export const isUser = async (req, res, next) => {
     if(req.user.user.role === 'user'){
         return next();
     }
-    res.status(403).send("No puede modificar el carrito del usuario")
+    res.status(403).send("No tiene permisos de usuario para realizar esta acción")
+}
+
+export const isOwn = async (req, res, next) => {
+    const user_mgr = new UserMongoMgr()
+    const { cid } = req.params
+    //buscar el cart del usuario en la base de datos
+    const { email } = req.user.user
+    const infoUser = await user_mgr.getUserByEmail(email)
+    const cartId = infoUser._doc.cart.toString()
+    //verificar que tenga agregado el cid en el cart
+    if(cartId === cid){
+        return next()
+    }
+    res.status(400).send("El producto no se puede agregar porque el carrito no es propio")
 }

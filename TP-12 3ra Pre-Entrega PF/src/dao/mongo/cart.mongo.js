@@ -19,7 +19,7 @@ export class CartMongoMgr {
         }
     }
 
-    async newCart(){
+    async createCart(){
         try{
             const cartAdded = await cartsModel.create({ product: [] })
             return cartAdded
@@ -31,7 +31,6 @@ export class CartMongoMgr {
     async saveCart(cart){
         try {
             await cart.save();
-            return cart;
         } catch(error){
             throw new Error(error.message)
         }
@@ -56,12 +55,14 @@ export class CartMongoMgr {
 
     async deleteProductInCart(cid, pid){
         try {
-            const updatedCart = await cartsModel.findByIdAndUpdate( 
-                cid, {$pull: {products: pid}}, //Elimino el producto del carrito
+            await cartsModel.findByIdAndUpdate( 
+                cid, 
+                {$pull: {products: {product: pid}}}, //Elimino el producto del carrito
                 {new: true} // Devuelve el carrito actualizado despues de la eliminación
-            ).populate('products.product')
-
-            return updatedCart;
+            )
+            .populate('products.product')
+            .exec()
+            return 'success'
         } catch(error){
             throw new Error(error.message)
         }

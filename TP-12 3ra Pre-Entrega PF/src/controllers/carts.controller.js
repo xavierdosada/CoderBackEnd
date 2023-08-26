@@ -1,7 +1,10 @@
+import product_cartDTO from '../dao/dtos/product.cart.dto.js';
+import { UserMongoMgr } from '../dao/mongo/user.mongo.js';
 import { cartsRepository, productsRepository } from '../repositories/index.js'
 
 const cart_repository = cartsRepository
 const product_repository = productsRepository
+const user_mgr = new UserMongoMgr()
 
 export const getCarts = async (req, res) => {
     try {
@@ -24,10 +27,15 @@ export const getCartsById = async (req, res) => {
     }
 }
 
-export const newCart = async (req, res) => {
+export const createCart = async (req, res) => {
     try {
-        const statusCart = await cart_repository.newCart();
-        res.status(201).send({message: statusCart})
+        const statusCart = await cart_repository.createCart();
+        const cid = statusCart._id.toString()
+        //agrego el id del carrito al usuario
+        const { email } = req.user.user
+        const userUpdated = await user_mgr.addCartToUser(cid, email)  
+
+        res.status(201).send({status: 'success', message: statusCart, userUpdated})
     } catch(error) {
         res.status(400).send({error: error.message})
     }
@@ -55,12 +63,19 @@ export const addProductToCart = async (req, res) => {
         }
 
         //Formateo el Proxy que devuelve mongo y luego hago el find
-        const cart_products = Object.values(cart.products)
-        const prodInCart = cart_products.find(prod => prod._doc._id === pid)
-        prodInCart ? prodInCart.quantity += 1 : cart.products.push({ product: pid, quantity: 1})
+        const cart_products = cart.products.toObject()
+        const prodInCart = cart_products.find(prod => prod.product._id.toString() === pid)
+        if(prodInCart){
+            const prodIndex = cart_products.findIndex(prod => prod.product._id.toString() === pid)
+            cart.products[prodIndex].quantity += 1
+        } else {
+            cart.products.push(new product_cartDTO(product))
+        }
 
-        const statusAdd = await cart_repository.saveCart(cart)
-        res.status(200).send({message: statusAdd, status: 'success'})
+        //guardo el cart
+        await cart_repository.saveCart(cart)
+        const cart_id = cart._doc._id.toString()
+        res.status(200).send({status: 'success', productAdded: product, inCart: cart_id})
     } catch(error){
         res.status(400).send({error: error.message})
     }
@@ -117,7 +132,7 @@ export const deleteProductInCart = async (req, res) => {
         }
 
         const result = await cart_repository.deleteProductInCart(cid, pid)
-        res.status(204).send(result)
+        res.status(204).send({status: result, productDeleted: product, inCart: cid})
     }catch(error){
         res.status(400).send({error: error.message})
     }

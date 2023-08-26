@@ -14,7 +14,7 @@ export default class cartsRepository{
     }
 
     createCart = async () => {
-        const newCart = await this.dao.newCart();
+        const newCart = await this.dao.createCart();
         return newCart;
     }
 
@@ -28,8 +28,8 @@ export default class cartsRepository{
     }
 
     deleteProductInCart = async (cid, pid) => {
-        const productDeleted = await this.dao.deleteProductInCart(cid, pid);
-        return productDeleted;
+        const result = await this.dao.deleteProductInCart(cid, pid);
+        return result;
     }
 
     deleteAllProductsInCart = async (cid) => {

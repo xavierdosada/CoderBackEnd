@@ -63,3 +63,7 @@ export const logoutView = async (req, res) => {
         res.redirect('/api/session/login')
     })
 }
+
+export const chat = async (req, res) => {
+    res.render('chat', {})
+}

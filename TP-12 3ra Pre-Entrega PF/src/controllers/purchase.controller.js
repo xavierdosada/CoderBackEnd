@@ -11,6 +11,9 @@ export const purchase = async (req, res) => {
     const { email } = req.user.user
     const purchase_cart = await cart_repository.getCartsById(cid)
     
+    if (purchase_cart.products.length === 0 || !purchase_cart.products){
+        throw new Error({status: 'error', message: 'El carrito esta vacio'})
+    }
     //Formateo el Proxy que devuelve mongo
     const cart_products = Object.values(purchase_cart.products)
     
@@ -32,13 +35,17 @@ export const purchase = async (req, res) => {
         }
 
         product.quantity = product.stock - prod.quantity
-        productsToUpdate.push({id: product._id, status: 'success', newStock: product.quantity, amount: product.price});
+        productsToUpdate.push({id: product._id, status: 'success', newStock: product.quantity, amount: product.price, quantity: prod.quantity});
     }
 
     //Discrimino los productos procesados y los que no fueron procesados
     const successProducts = productsToUpdate.filter(prod => prod.status === 'success')
-    const noProcessProducts = productsToUpdate.filter(prod => prod.status === 'No process')
+    if(successProducts.length === 0){
+        throw new Error({status: 'error', message: 'Ningun articulo se pudo comprar, no hay stock o no existen'})
+    }
 
+    const noProcessProducts = productsToUpdate.filter(prod => prod.status === 'No process')
+    
     for (const prod of successProducts) {
         try{
             //actualizo el stock y elimino del carrito de compras los productos que fueron comprados

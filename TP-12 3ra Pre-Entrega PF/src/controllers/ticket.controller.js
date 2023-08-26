@@ -9,7 +9,7 @@ export const ticketProcess = (email, successProducts) => {
     const date = new Date()
 
     //AMOUNT
-    const totalAmount = successProducts.reduce((total, product) => total + product.amount, 0)  
+    const totalAmount = successProducts.reduce((total, product) => total + product.amount * product.quantity, 0)  
     
     //formateo el ticket
     const dataTicket = {code, date, totalAmount, email}

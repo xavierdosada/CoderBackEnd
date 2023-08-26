@@ -1,4 +1,5 @@
 import { io } from '../app.js'
+import productDTO from '../dao/dtos/product.dto.js';
 import productsModel from "../dao/models/products.model.js";
 import formatResponse from "../dao/mongo/formatResponse.js";
 import { productsRepository } from "../repositories/index.js";
@@ -59,7 +60,7 @@ export const addProduct = async (req, res) => {
             throw new Error('Code ya existe')
         } 
             
-        const prodAdded = await product_repository.addProduct(newProduct)
+        const prodAdded = await product_repository.addProduct(new productDTO(newProduct))
         const products = await product_repository.getProducts() //productos actualizados
         io.emit('updateproducts', products) //los envio por websockets al front
         res.status(201).send({status: "success", product: prodAdded })
