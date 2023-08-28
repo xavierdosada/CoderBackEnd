@@ -16,7 +16,6 @@ import initializePassport from "./config/passport.config.js";
 //ENV
 import env from './config/config.js'
 
-import { messageDBManager } from "./dao/mongo/messages.mongo.js";
 
 const app = express();
 const serverMongo = app.listen(env.PORT, () => {console.log('connected to mongodb on port: ' + env.PORT)})
@@ -27,7 +26,6 @@ const connection = mongoose.connect(env.MONGO_URL, {
 )
 
 export const io = new Server(serverMongo)
-const messagesDBM = new messageDBManager();
 
 app.use(express.static(__dirname+'/public'))
 app.use(cookieParser())
@@ -53,16 +51,3 @@ app.set('views', `${__dirname}/views`);
 app.set('view engine', 'handlebars');
 
 app.use('/', routes)
-
-io.on('connection', (socket) => {
-    socket.on('message', async (data) => {
-        socket.emit('')
-        await messagesDBM.addMessage(data)
-        const messages = await messagesDBM.getMessages()
-        io.emit('messageLogs', messages)
-    })
-
-    socket.on('authenticated', (data) => {
-        socket.broadcast.emit('newUserConnected', data)
-    })
-})

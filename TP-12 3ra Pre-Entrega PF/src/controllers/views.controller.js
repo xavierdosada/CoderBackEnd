@@ -1,6 +1,8 @@
+import { io } from '../app.js'
 import productsModel from '../dao/models/products.model.js';
-import { productsRepository } from "../repositories/index.js";
+import { productsRepository, messagesRepository } from "../repositories/index.js";
 
+const messages_repository = messagesRepository;
 const product_repository = productsRepository
 
 //MIDDELWARES
@@ -65,5 +67,17 @@ export const logoutView = async (req, res) => {
 }
 
 export const chat = async (req, res) => {
+    io.on('connection', (socket) => {
+        socket.on('message', async (data) => {
+            socket.emit('')
+            await messages_repository.addMessage(data)
+            const messages = await messages_repository.getMessages();
+            io.emit('messageLogs', messages)
+        })
+    
+        socket.on('authenticated', (data) => {
+            socket.broadcast.emit('newUserConnected', data)
+        })
+    })
     res.render('chat', {})
 }

@@ -1,6 +1,6 @@
 import messagesModel from "../models/message.model.js";
 
-export class messageDBManager{
+export class MessageMongoMgr{
     async getMessages(){
         try {
             const messages = await messagesModel.find();
