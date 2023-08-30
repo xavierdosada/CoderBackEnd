@@ -5,6 +5,7 @@ import productsRouter from '../routes/products.router.js'
 import cartsRouter from '../routes/carts.router.js'
 import mockRouter from '../routes/mock.router.js'
 
+
 const routes = Router()
 
 routes.use('/api/session', sessionRouter)

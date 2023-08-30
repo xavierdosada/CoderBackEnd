@@ -16,7 +16,6 @@ import initializePassport from "./config/passport.config.js";
 //ENV
 import env from './config/config.js'
 
-
 const app = express();
 const serverMongo = app.listen(env.PORT, () => {console.log('connected to mongodb on port: ' + env.PORT)})
 const connection = mongoose.connect(env.MONGO_URL, { 
