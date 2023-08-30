@@ -3,6 +3,9 @@ import productDTO from '../dao/dtos/product.dto.js';
 import productsModel from "../dao/models/products.model.js";
 import formatResponse from "../dao/mongo/formatResponse.js";
 import { productsRepository } from "../repositories/index.js";
+import CustomError from '../services/errors/CustomError.js';
+import EError from '../services/errors/enums.js';
+import { generateProductErrorInfo } from '../services/errors/info.js';
 
 const product_repository = productsRepository
 
@@ -37,7 +40,12 @@ export const addProduct = async (req, res) => {
     const { title, description, code, price, status, stock, category} = newProduct
     try {
         if (!title || !description || !code || !price || !status || !stock || !category){
-            throw new Error("Faltan campos")
+            CustomError.createError({
+                name: 'Product Error',
+                cause: generateProductErrorInfo({newProduct}),
+                code: EError.INVALID_TYPES_ERROR,
+                message: 'Error trying to create a new Product'
+            })
         }
         //Valido los tipo de datos requeridos
         if ( 
