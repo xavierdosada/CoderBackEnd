@@ -73,6 +73,7 @@ export const addProduct = async (req, res) => {
         io.emit('updateproducts', products) //los envio por websockets al front
         res.status(201).send({status: "success", product: prodAdded })
     } catch(error){
+        req.logger.error(error)
         res.status(400).send({error})
     }
 } 
@@ -83,6 +84,7 @@ export const getProductById = async (req, res) => {
         const products = await product_repository.getProductById(pid)
         res.status(200).send(products);
     } catch (error) {
+        req.logger.error(error)
         res.status(400).send({error: error.message})
     }
 }
@@ -101,6 +103,7 @@ export const updateProduct = async (req, res) => {
         io.emit('updateproducts', products) //los envio por websockets al front
         res.status(200).send({message: statusUpdate});
     } catch (error) {
+        req.logger.error(error)
         res.status(400).send({error: error.message})
     }
 }
@@ -118,6 +121,7 @@ export const deleteProduct = async (req, res) => {
         io.emit('updateproducts', products) //los envio por websockets al front
         res.status(200).send({message: statusDelete})
     } catch(error){
+        req.logger.error(error)
         res.status(404).send({error: error.message})
     }
 }
