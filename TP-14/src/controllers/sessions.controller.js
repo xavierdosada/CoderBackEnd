@@ -26,7 +26,7 @@ export const github = async (req, res) => {
 export const githubcallback = async (req, res) => {
     try {
         req.session.user = req.user
-        console.log(req.session.user)
+        req.logger.debug(req.session.user)
         res.redirect('/products')
     } catch (error) {
         req.logger.error(error)
