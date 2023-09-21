@@ -36,8 +36,9 @@ export const pagination = async (req, res) => {
 }
 
 export const addProduct = async (req, res) => {
+    const owner_email = req.user.user.email
     const newProduct = req.body
-    const { title, description, code, price, status, stock, category} = newProduct
+    const { title, description, code, price, status, stock, category, owner} = newProduct
     try {
         if (!title || !description || !code || !price || !status || !stock || !category){
             CustomError.createError({
@@ -62,13 +63,19 @@ export const addProduct = async (req, res) => {
         ){
             throw new Error("Verifique que price o stock sean de tipo number")
         }
+        if ( 
+            typeof owner !== "object"
+        ){
+            throw new Error("Verifique que owner sea un objeto")
+        }
         
         const product = await product_repository.getProductByCode(code)
         if(product){
             throw new Error('Code ya existe')
         } 
-            
-        const prodAdded = await product_repository.addProduct(new productDTO(newProduct))
+        
+        newProduct.owner.createdBy = owner_email
+        const prodAdded = await product_repository.addProduct(new productDTO({newProduct}))
         const products = await product_repository.getProducts() //productos actualizados
         io.emit('updateproducts', products) //los envio por websockets al front
         res.status(201).send({status: "success", product: prodAdded })

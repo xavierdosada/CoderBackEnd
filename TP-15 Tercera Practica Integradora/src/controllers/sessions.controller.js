@@ -1,5 +1,8 @@
 import userDTO from "../dao/dtos/user.dto.js"
 import { UserMongoMgr } from "../dao/mongo/user.mongo.js"
+import { productsRepository } from "../repositories/index.js"
+
+const product_repository = productsRepository
 
 export const register = async (req, res) => {
     res.status(201).send({ status: 'success', message: "The user has been registered" })
@@ -49,12 +52,47 @@ export const current = async (req, res) => {
     res.status(200).send({currentUser: currentUser})
 }
 
+export const isOwnCart = async (req, res) => {
+    const user_mgr = new UserMongoMgr()
+    const { cid } = req.params
+    //buscar el cart del usuario en la base de datos
+    const { email } = req.user.user
+    const infoUser = await user_mgr.getUserByEmail(email)
+    const cartId = infoUser._doc.cart.toString()
+    //verificar que tenga agregado el cid en el cart
+    if(cartId === cid){
+        return true
+    }
+    req.logger.warning('No tiene permisos')
+    throw new Error("El producto no se puede agregar porque el carrito no es propio")
+}
+
+export const isOwnProduct = async (req, res) => {
+    const { email } = req.user.user
+    const { pid } = req.params
+    const prod = await product_repository.getProductById(pid)
+    const owner_email = prod._doc.owner.createdBy
+    if(email === owner_email){
+        return true
+    }
+    req.logger.warning('No tiene permisos')
+    throw new Error("El producto no se puede agregar porque el producto no es propio")
+}   
+
 //MIDDLEWARES
 export const isAdmin = async (req, res, next) => {
     if(req.user.user.role === 'admin'){
         return next();
     }
     req.logger.warning('No es admin / sin permisos')
+    res.status(403).send("No tienes permisos suficientes")
+}
+
+export const isPremium = async (req, res, next) => {
+    if(req.user.user.role === 'premium'){
+        return next();
+    }
+    req.logger.warning('No es premium / sin permisos')
     res.status(403).send("No tienes permisos suficientes")
 }
 
@@ -66,17 +104,25 @@ export const isUser = async (req, res, next) => {
     res.status(403).send("No tiene permisos de usuario para realizar esta acción")
 }
 
-export const isOwn = async (req, res, next) => {
-    const user_mgr = new UserMongoMgr()
-    const { cid } = req.params
-    //buscar el cart del usuario en la base de datos
-    const { email } = req.user.user
-    const infoUser = await user_mgr.getUserByEmail(email)
-    const cartId = infoUser._doc.cart.toString()
-    //verificar que tenga agregado el cid en el cart
-    if(cartId === cid){
+export const isUserOrPremium = async (req, res, next) => {
+    if((req.user.user.role === 'user' || req.user.user.role === 'premium') && await isOwn()){
+        return next();
+    }
+    req.logger.warning('No es user o premium / no tiene permisos de usuario')
+    res.status(403).send("No tiene permisos de usuario para realizar esta acción")
+}
+
+export const deleteValidations = async (req, res, next) => {
+    if (req.user.user.role === 'admin'){
         return next()
     }
+
+    if (req.user.user.role === 'premium'){
+        if(await isOwnProduct(req, res)){
+            return next()
+        }
+    }
+
     req.logger.warning('No tiene permisos')
-    res.status(400).send("El producto no se puede agregar porque el carrito no es propio")
+    res.status(400).send("El producto no se puede eliminar porque el producto no es propio o no tiene suficientes permisos")
 }

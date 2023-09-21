@@ -32,6 +32,16 @@ const schema = new mongoose.Schema({
     category: {
         type: String,
         required: true
+    },
+    owner: {
+        createdBy: {
+            type: String,
+            required: true
+        },
+        role: {
+            type: String,
+            default: 'admin'
+        }
     }
 })
 
