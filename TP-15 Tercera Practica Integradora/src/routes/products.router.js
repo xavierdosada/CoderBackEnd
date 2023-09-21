@@ -7,9 +7,9 @@ import errorHandlebar from '../services/errors/index.js'
 const router = Router();
 
 router.get('/:limit?/:page?/:sort?', pagination)
-router.post('/', passport.authenticate('current', { session: false }), addProduct, errorHandlebar)
+router.post('/', passport.authenticate('current', { session: false }), isAdmin, addProduct, errorHandlebar)
 router.get('/:pid', getProductById)
-router.put('/:pid', passport.authenticate('current', { session: false }),  updateProduct)
+router.put('/:pid', passport.authenticate('current', { session: false }), updateProduct)
 router.delete('/:pid', passport.authenticate('current', { session: false }), deleteValidations, deleteProduct)
 
 export default router;

@@ -105,7 +105,7 @@ export const isUser = async (req, res, next) => {
 }
 
 export const isUserOrPremium = async (req, res, next) => {
-    if((req.user.user.role === 'user' || req.user.user.role === 'premium') && await isOwn()){
+    if((req.user.user.role === 'user' || req.user.user.role === 'premium') && await isOwnCart()){
         return next();
     }
     req.logger.warning('No es user o premium / no tiene permisos de usuario')
