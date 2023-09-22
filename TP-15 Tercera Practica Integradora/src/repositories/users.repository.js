@@ -7,6 +7,10 @@ export default class UsersRepository{
         return await this.dao.getUserByEmail(email);
     }
 
+    getUserById = async (id) => {
+        return await this.dao.getUserById(id);
+    }
+
     addCartToUser = async (cid, email) => {
         return await this.dao.addCartToUser(cid, email);
     }

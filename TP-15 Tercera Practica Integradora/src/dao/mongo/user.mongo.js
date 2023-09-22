@@ -10,6 +10,15 @@ export class UserMongoMgr{
         }
     }
 
+    async getUserById(id){
+        try {
+            const user = await UserModel.findOne({_id: id})
+            return user
+        } catch (error) {
+            throw new Error(error.message)
+        }
+    }
+
     async addCartToUser(cid, email){
         try {
             const user = await UserModel.findOneAndUpdate(
@@ -31,4 +40,6 @@ export class UserMongoMgr{
             throw new Error({error: error.message})
         }
     }
+
+
 }

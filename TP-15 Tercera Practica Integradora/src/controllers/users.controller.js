@@ -33,3 +33,19 @@ export const updateUser = async (req, res) => {
         res.status(400).send({payload: "Error", error: error.message})
     }
 }
+
+export const changeUserRole = async (req, res) => {
+    try {
+        const { uid } = req.params
+        const user = await user_repository.getUserById(uid)
+        const { email } = user._doc
+        const { role } = user._doc
+        if(role === 'admin') res.status(400).send({payload: "Error", message: "No puede cambiar el rol de un admin"})
+
+        const roleChange = role === 'user' ? 'premium' : 'user'
+        await user_repository.updateUser(email, {role: roleChange})
+        res.status(200).send({payload: "success", message: `El rol fue cambiado a ${roleChange} correctamente.`})
+    } catch (error) {
+        res.status(400).send({payload: "Error", error: error.message})
+    }
+}
