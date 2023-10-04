@@ -1,11 +1,17 @@
+import mongoose from 'mongoose'
+import env from '../config/config.js'
 import chai from 'chai'
 import supertest from 'supertest'
+import { UserMongoMgr } from '../dao/mongo/user.mongo.js'
 
+const user_mgr = new UserMongoMgr()
 const expect = chai.expect
 const requester = supertest(`http://localhost:8080`)
 
-describe.only('Testing Router Session', () => {
-    it('POST /api/session/login -- Debe ser redireccionado al faillogin si el usuario/contraseña son incorrectos', async () => {
+mongoose.connect(env.MONGO_URL_TESTING)
+
+describe('Testing Router Session', () => {
+    it('POST /api/session/login -- Redireccionado a faillogin si user/pass son incorrectos', async () => {
         const mockUser = {
             email: "asdp123421111nlf@gmail.com",
             password: "12134321d",
@@ -21,10 +27,10 @@ describe.only('Testing Router Session', () => {
         const mockUser = {
             first_name: "Xavi",
             last_name: "Dosada",
-            email: "asdp10121ddds1nlf@gmail.com",
+            email: "testing@gmail.com",
             dob: "11/11/2023",
             password: "123asd",
-            role: "user"
+            role: "admin"
         }
 
         const { body, statusCode } = await requester.post('/api/session/register').send(mockUser)
@@ -32,5 +38,20 @@ describe.only('Testing Router Session', () => {
         expect(body).to.have.property('status', 'success')
         expect(body).to.have.property('payload')
     })
-    
+
+    it('POST /api/session/login -- Debe loguear el usuario rol: admin', async () => {
+        const mockUser = {
+            email: "testing@gmail.com",
+            password: "123asd",
+        }
+
+        const { body, statusCode } = await requester.post('/api/session/login').send(mockUser)
+        expect(statusCode).to.equal(200)
+        expect(body).to.have.property('status', 'success')
+    })
+
+    after( async () => {
+        const user = await user_mgr.getUserByEmail('testing@gmail.com')
+        await user_mgr.deleteUser(user._id)
+    })
 })

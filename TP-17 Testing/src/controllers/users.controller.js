@@ -4,7 +4,7 @@ const user_repository = userRepository
 
 export const getUserByEmail = async (req, res) => {
     try {
-        const { email } = req
+        const { email } = req.params
         const user = await user_repository.getUserByEmail(email)
         res.status(200).send({payload: "successfully", user})
     } catch (error) {
@@ -45,6 +45,17 @@ export const changeUserRole = async (req, res) => {
         const roleChange = role === 'user' ? 'premium' : 'user'
         await user_repository.updateUser(email, {role: roleChange})
         res.status(200).send({payload: "success", message: `El rol fue cambiado a ${roleChange} correctamente.`})
+    } catch (error) {
+        res.status(400).send({payload: "Error", error: error.message})
+    }
+}
+
+export const deleteUser = async (req, res) => {
+    try {
+        const { uid } = req.params
+        if (!uid) res.status(400).send({payload: "Error", message: "Es necesario un id para eliminar un usuario"})
+        user_repository.deleteUser(uid)
+        res.status(204).send({payload: "Success", message: "El usuario fue eliminado"})
     } catch (error) {
         res.status(400).send({payload: "Error", error: error.message})
     }

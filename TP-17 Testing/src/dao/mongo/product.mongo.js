@@ -49,8 +49,7 @@ export class ProductMongoMgr{
 
     async deleteProduct(id){
         try{
-            const deletedProd = await productsModel.deleteOne({ _id: id})
-            return deletedProd
+            await productsModel.deleteOne({ _id: id})
         }catch(error){
             return new Error({error: error.message})
         }

@@ -6,7 +6,7 @@ export class UserMongoMgr{
             const user = await UserModel.findOne({email: email})
             return user
         } catch (error) {
-            throw new Error(error.message)
+            throw error
         }
     }
 
@@ -15,7 +15,7 @@ export class UserMongoMgr{
             const user = await UserModel.findOne({_id: id})
             return user
         } catch (error) {
-            throw new Error(error.message)
+            throw error
         }
     }
 
@@ -28,7 +28,7 @@ export class UserMongoMgr{
             );
             return user
         } catch (error) {
-            throw new Error(error.message)
+            throw error
         }
     }
 
@@ -37,7 +37,16 @@ export class UserMongoMgr{
             const result = await UserModel.updateOne({email: email}, data)
             return {message: `The user was updated successfully`, status: result}
         } catch (error) {
-            throw new Error({error: error.message})
+            throw error
+        }
+    }
+
+    async deleteUser(id){
+        try {
+            const result = await UserModel.deleteOne({_id: id})
+            return result
+        } catch (error) {
+            throw error
         }
     }
 

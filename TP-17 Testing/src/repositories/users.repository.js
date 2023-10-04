@@ -4,7 +4,8 @@ export default class UsersRepository{
     }
 
     getUserByEmail = async (email) => {
-        return await this.dao.getUserByEmail(email);
+        const user = await this.dao.getUserByEmail(email);
+        return user
     }
 
     getUserById = async (id) => {
@@ -17,5 +18,9 @@ export default class UsersRepository{
 
     updateUser = async (email, data) => {
         return await this.dao.updateUser(email, data);
+    }
+
+    deleteUser = async (id) => {
+        return await this.dao.deleteUser(id)
     }
 }
