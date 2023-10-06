@@ -1,7 +1,7 @@
 import { Router } from "express";
 import passport from "passport";
 import { addProduct, deleteProduct, getProductById, pagination, updateProduct } from "../controllers/products.controller.js";
-import { isAdminOrPremium, isAdmin, isPremium } from "../controllers/sessions.controller.js";
+import { isAdminOrPremium } from "../controllers/sessions.controller.js";
 import errorHandlebar from '../services/errors/index.js'
 
 const router = Router();

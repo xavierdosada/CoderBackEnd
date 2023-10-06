@@ -3,7 +3,6 @@ import productsModel from "../models/products.model.js";
 export class ProductMongoMgr{
     async addProduct(newProduct){
         try {
-            console.log(newProduct)
             const prodAdded = await productsModel.create(newProduct)
             return prodAdded
         }catch(error){
@@ -49,7 +48,7 @@ export class ProductMongoMgr{
 
     async deleteProduct(id){
         try{
-            await productsModel.deleteOne({ _id: id})
+            return await productsModel.deleteOne({ _id: id})
         }catch(error){
             return new Error({error: error.message})
         }

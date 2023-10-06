@@ -79,5 +79,13 @@ export class CartMongoMgr {
             throw new Error(error.message)
         }
     }
+
+    async deleteCart(id){
+        try {
+            await cartsModel.deleteOne({_id: id})
+        } catch (error) {
+            throw new Error(error.message)
+        }
+    }
 }
 
