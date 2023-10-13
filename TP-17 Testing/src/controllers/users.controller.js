@@ -60,3 +60,23 @@ export const deleteUser = async (req, res) => {
         res.status(400).send({payload: "Error", error: error.message})
     }
 }
+
+export const updateUserDocuments = async (req, res) => {
+    try {
+        const { uid } = req.params
+        if (!uid) res.status(400).send({payload: "Error", message: "Es necesario un id para subir documentos al usuario"})
+        if (!req.files) res.status(400).send({payload: "Error", message: "Se necesitan documentos para actualizar el usuario"})
+        const user = await user_repository.updateUserDocuments(uid, req.files)
+        res.status(200).send({payload: "successfully", user})
+    } catch (error) {
+        res.status(400).send({payload: "Error", error: error.message})
+    }
+}
+
+//Middelwares
+
+export const setLastConnection = async (req, res, next) => {
+    const { uid } = req.params
+    await user_repository.setLastConnection(uid)
+    next();
+}

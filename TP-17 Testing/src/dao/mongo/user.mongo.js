@@ -50,5 +50,24 @@ export class UserMongoMgr{
         }
     }
 
+    async setLastConnection(id){
+        try {
+            const user = await this.getUserById(id)
+            await user.updateOne({ last_connection: new Date() })
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async updateUserDocuments(id, files){
+        try {
+            const user = await this.getUserById(id)
+            const documents = user.documents || []
+            const newDocuments = [...documents, ...files.map(file => file.path)]
+            return await user.updateOne({ documents: newDocuments})
+        } catch (error) {
+            throw error
+        }
+    }
 
 }

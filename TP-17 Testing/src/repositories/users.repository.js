@@ -23,4 +23,12 @@ export default class UsersRepository{
     deleteUser = async (id) => {
         return await this.dao.deleteUser(id)
     }
+
+    setLastConnection = async (id) => {
+        return await this.dao.setLastConnection(id)
+    }
+
+    updateUserDocuments = async (id, files) => {
+        return await this.dao.updateUserDocuments(id, files)
+    }
 }

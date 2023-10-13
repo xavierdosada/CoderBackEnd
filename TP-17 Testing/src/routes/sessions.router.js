@@ -2,6 +2,7 @@ import { Router } from "express"
 import passport from "passport";
 import cookieParser from "cookie-parser";
 import { current, failLogin, failRegister, github, githubcallback, login, logout, register } from "../controllers/sessions.controller.js";
+import { setLastConnection } from "../controllers/users.controller.js";
 
 const router = Router();
 router.use(cookieParser())
@@ -11,7 +12,7 @@ router.post('/register', passport.authenticate('register', { failureRedirect: '/
 router.get('/failregister', failRegister)
 
 //LOGIN
-router.post('/login', passport.authenticate('login', { session: false, failureRedirect: '/api/session/faillogin' }), login)
+router.post('/login', passport.authenticate('login', { session: false, failureRedirect: '/api/session/faillogin' }), setLastConnection, login)
 router.get('/faillogin', failLogin)
 
 //GITHUB LOGIN
@@ -19,7 +20,7 @@ router.get('/github', passport.authenticate('github', { scope: ['user:email'] })
 router.get('/githubcallback', passport.authenticate('github', { failureRedirect: '/api/session/login' }), githubcallback)
 
 //DELETE SESSION
-router.get('/logout', logout)
+router.get('/logout', setLastConnection, logout)
 
 //CURRENT
 router.get('/current', passport.authenticate('current', { session: false }), current)
