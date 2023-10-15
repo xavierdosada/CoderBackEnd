@@ -1,9 +1,18 @@
 import __dirname from '../utils.js'
 import multer from 'multer'
 
+//diccionario de carpetas
+const fieldToFolder = {
+    profileImage: 'profiles/',
+    productImage: 'products/',
+    document: 'documents/',
+};
+
 const storage = multer.diskStorage({
-    destination: function(req, file, cb){
-        cb(null, `${__dirname}/../public/img`)
+    destination: (req, file, cb) => {
+        const folderName = fieldToFolder[file.fieldname] || ''
+        const uploadPath = `${__dirname}/../public/uploads/${folderName}` 
+        cb(null, uploadPath);
     },
     filename: function(req, file, cb){
         cb(null, `${Date.now()}-${file.originalname}`)

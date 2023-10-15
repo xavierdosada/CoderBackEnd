@@ -50,10 +50,12 @@ export class UserMongoMgr{
         }
     }
 
-    async setLastConnection(id){
+    async setLastConnection(email){
         try {
-            const user = await this.getUserById(id)
-            await user.updateOne({ last_connection: new Date() })
+            await UserModel.updateOne(
+                {email: email},
+                {$set: { last_connection: new Date()}}
+            );
         } catch (error) {
             throw error
         }
@@ -63,11 +65,12 @@ export class UserMongoMgr{
         try {
             const user = await this.getUserById(id)
             const documents = user.documents || []
-            const newDocuments = [...documents, ...files.map(file => file.path)]
-            return await user.updateOne({ documents: newDocuments})
+            const newDocuments = [
+                ...documents,
+                 ...files.map(file => ({name: file.originalname, reference: file.path}))]
+            return await UserModel.updateOne({ documents: newDocuments})
         } catch (error) {
             throw error
         }
     }
-
 }
