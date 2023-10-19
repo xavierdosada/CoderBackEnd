@@ -13,6 +13,11 @@ export default class UsersRepository{
         return user
     }
 
+    getInactiveUsers = async (time) => {
+        const users = await this.dao.getInactiveUsers(time);
+        return users
+    }
+
     getUserById = async (id) => {
         return await this.dao.getUserById(id);
     }
@@ -27,6 +32,10 @@ export default class UsersRepository{
 
     deleteUser = async (id) => {
         return await this.dao.deleteUser(id)
+    }
+
+    deleteInactiveUsers = async (time) => {
+        return await this.dao.deleteInactiveUsers(time)
     }
 
     setLastConnection = async (email) => {

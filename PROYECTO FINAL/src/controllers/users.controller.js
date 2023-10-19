@@ -1,5 +1,6 @@
 import { userRepository } from '../repositories/index.js'
 import userDTO from '../dao/dtos/user.dto.js'
+import { sendEmail } from '../utils/sendEmails.js'
 
 const user_repository = userRepository
 
@@ -85,6 +86,36 @@ export const deleteUser = async (req, res) => {
         res.status(400).send({ payload: "Error", error: error.message })
     }
 }
+
+export const deleteInactiveUsers = async (req, res) => {
+    try {
+        //Dos dias inactivo se elimina el usuario
+        const today = new Date()
+        today.setDate(today.getDate() - 2)
+        const twoDaysBefore = today.toISOString();
+        //Busco los usuarios que estan inactivos por más de 2 dias
+        const inactiveUsers = await user_repository.getInactiveUsers(twoDaysBefore)
+        if (!inactiveUsers) res.status(404).send({ payload: "Not Found", message: "No hay usuarios inactivos" })
+
+        //elimino los usuarios
+        const { acknowledged, deletedCount } = await user_repository.deleteInactiveUsers(twoDaysBefore)
+        if (!acknowledged) res.status(400).send({ payload: "Error", message: "Hubo un error al intentar eliminar los usuarios inactivos" })
+
+        //se envia los email a los usuarios eliminados
+        inactiveUsers.map(user => {
+            const { email } = user
+            const subject = 'Cuenta Inactiva'
+            const message = 'Su cuenta ha sido eliminada debido a inactividad.'
+            sendEmail(email, subject, message)
+        })
+
+        res.status(200).send({ payload: "Success", message: `Se eliminaron ${deletedCount} usuarios inactivos` })
+    } catch (error) {
+        res.status(400).send({ payload: "Error", error: error.message })
+    }
+}
+
+
 
 export const updateUserDocuments = async (req, res) => {
     try {

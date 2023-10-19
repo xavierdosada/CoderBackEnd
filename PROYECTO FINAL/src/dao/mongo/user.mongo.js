@@ -19,6 +19,19 @@ export class UserMongoMgr{
         }
     }
 
+    async getInactiveUsers(time){
+        try {
+            const users = await UserModel.find({
+                last_connection: {
+                    $lt: new Date(time)   
+                }
+            })
+            return users
+        } catch (error) {
+            throw error
+        }
+    }
+
     async getUserById(id){
         try {
             const user = await UserModel.findOne({_id: id})
@@ -53,6 +66,19 @@ export class UserMongoMgr{
     async deleteUser(id){
         try {
             const result = await UserModel.deleteOne({_id: id})
+            return result
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async deleteInactiveUsers(time){
+        try {
+            const result = await UserModel.deleteMany({
+                last_connection: {
+                    $lt: new Date(time)
+                }
+            })
             return result
         } catch (error) {
             throw error
