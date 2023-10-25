@@ -1,9 +1,10 @@
 import { io } from '../app.js'
 import productsModel from '../dao/models/products.model.js';
-import { productsRepository, messagesRepository } from "../repositories/index.js";
+import { productsRepository, messagesRepository, userRepository } from "../repositories/index.js";
 
 const messages_repository = messagesRepository;
-const product_repository = productsRepository
+const product_repository = productsRepository;
+const users_repository = userRepository;
 
 //MIDDELWARES
 export const publicAccess = (req, res, next) => {
@@ -85,4 +86,9 @@ export const chat = async (req, res) => {
         })
     })
     res.render('chat', {})
+}
+
+export const adminDashboard = async (req, res) => {
+    const users = await users_repository.getAll()
+    res.render('adminBoard', { users })
 }

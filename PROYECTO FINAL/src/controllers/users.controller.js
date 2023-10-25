@@ -1,6 +1,7 @@
 import { userRepository } from '../repositories/index.js'
 import userDTO from '../dao/dtos/user.dto.js'
 import { sendEmail } from '../utils/sendEmails.js'
+import { io } from '../app.js'
 
 const user_repository = userRepository
 
@@ -54,9 +55,9 @@ export const changeUserRole = async (req, res) => {
         const user = await user_repository.getUserById(uid)
         const { email } = user._doc
         const { role } = user._doc
-        const roleChangeTo = user
+        let roleChangeTo = 'user'
 
-        if (role === 'admin') res.status(400).send({ payload: "Error", message: "No puede cambiar el rol de un admin" })
+        if (role === 'admin') return res.status(400).send({ payload: "Error", message: "No puede cambiar el rol de un admin" })
         if (role === 'user') {
             const requiredDocuments = ['id', 'adress', 'account state']
             const userDocuments = user.documents || []
@@ -65,14 +66,14 @@ export const changeUserRole = async (req, res) => {
             const hasAllDocuments = requiredDocuments.every(requiredDoc => {
                 return userDocuments.some(userDocument => userDocument.name.includes(requiredDoc))
             })
-            if (!hasAllDocuments) res.status(400).send({ payload: "Error", message: "No tiene los documentos necesarios para cambiar de role a premium" })
-            roleChangeTo = premium;
+            if (!hasAllDocuments) return res.status(400).send({ payload: "Error", message: "No tiene los documentos necesarios para cambiar de role a premium" })
+            roleChangeTo = 'premium';
         }
 
         await user_repository.updateUser(email, { role: roleChangeTo })
-        res.status(200).send({ payload: "success", message: `El rol fue cambiado a ${roleChangeTo} correctamente.` })
+        return res.status(200).send({ payload: "success", message: `El rol fue cambiado a ${roleChangeTo} correctamente.` })
     } catch (error) {
-        res.status(400).send({ payload: "Error", error: error.message })
+        return res.status(400).send({ payload: "Error", error: error.message })
     }
 }
 
@@ -81,6 +82,8 @@ export const deleteUser = async (req, res) => {
         const { uid } = req.params
         if (!uid) res.status(400).send({ payload: "Error", message: "Es necesario un id para eliminar un usuario" })
         user_repository.deleteUser(uid)
+        //renderizo de nuevo para que se actualize en timepo real mediante socket.io
+        io.emit('adminBoard')
         res.status(204).send({ payload: "Success", message: "El usuario fue eliminado" })
     } catch (error) {
         res.status(400).send({ payload: "Error", error: error.message })

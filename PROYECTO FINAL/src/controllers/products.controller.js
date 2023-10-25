@@ -6,6 +6,7 @@ import { productsRepository } from "../repositories/index.js";
 import CustomError from '../services/errors/CustomError.js';
 import EError from '../services/errors/enums.js';
 import { generateProductErrorInfo } from '../services/errors/info.js';
+import { sendEmail } from '../utils/sendEmails.js';
 
 const product_repository = productsRepository
 
@@ -125,6 +126,12 @@ export const deleteProduct = async (req, res) => {
 
         const statusDelete = await product_repository.deleteProduct(pid)
         const products = await product_repository.getProducts() //productos actualizados
+
+        //envio un email al usuario premium dueño del producto
+        // if (productExist.rol === 'premium'){
+        //     sendEmail()
+        // }
+
         io.emit('updateproducts', products) //los envio por websockets al front
         res.status(200).send({message: statusDelete})
     } catch(error){

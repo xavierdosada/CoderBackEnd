@@ -12,7 +12,7 @@ export class ProductMongoMgr{
 
     async getProducts(){
         try{
-            const products = await productsModel.find();
+            const products = await productsModel.find().lean();
             return products
         }catch(error){
             return new Error({error: error.message})

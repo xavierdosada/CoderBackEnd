@@ -3,7 +3,7 @@ import UserModel from "../models/user.model.js";
 export class UserMongoMgr{
     async getAll(){
         try {
-            const users = await UserModel.find()
+            const users = await UserModel.find().lean()
             return users
         } catch (error) {
             throw error
