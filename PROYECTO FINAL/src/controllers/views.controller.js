@@ -1,10 +1,11 @@
 import { io } from '../app.js'
 import productsModel from '../dao/models/products.model.js';
-import { productsRepository, messagesRepository, userRepository } from "../repositories/index.js";
+import { productsRepository, messagesRepository, userRepository, cartsRepository } from "../repositories/index.js";
 
 const messages_repository = messagesRepository;
 const product_repository = productsRepository;
 const users_repository = userRepository;
+const cart_repository = cartsRepository;
 
 //MIDDELWARES
 export const publicAccess = (req, res, next) => {
@@ -50,8 +51,17 @@ export const productByIdView = async (req, res) => {
 }
 
 export const realTimeProducts = async (req, res) => {
+    const cartId = req.user.user.cart
     const products = await product_repository.getProducts();
-    res.render('realTimeProducts', { products })
+    res.render('realTimeProducts', { products, cartId })
+}
+
+export const myCart = async (req, res) => {
+    const { cid } = req.params
+    const cartById = await cart_repository.getCartsById(cid);
+    const prods = cartById.products.toObject()
+    console.log(prods)
+    res.render('cart', { prods })
 }
 
 export const registerView = async (req, res) => {

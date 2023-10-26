@@ -16,12 +16,10 @@ export const getCarts = async (req, res) => {
 }
 
 export const getCartsById = async (req, res) => {
-    const cid = req.params.cid
     try {
+        const cid = req.params.cid
         const cartById = await cart_repository.getCartsById(cid);
-        const prods = cartById.products.toObject()
-        res.render('cart', { prods })
-        res.status(200).send(prods)
+        res.status(200).send({ cartById })
     } catch(error){
         req.logger.error(error)
         res.status(400).send({error: error.message})

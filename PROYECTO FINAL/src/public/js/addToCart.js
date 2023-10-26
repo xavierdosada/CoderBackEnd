@@ -3,6 +3,10 @@ const addListeners = () => {
     addToCartButtons.forEach(button => {
         button.addEventListener('click', addToCart);
     });
+    const seeCartButton = document.querySelectorAll('.seeCart');
+    seeCartButton.forEach(button => {
+        button.addEventListener('click', seeCart);
+    });
 }
 
 const addToCart = async (event) => {
@@ -42,6 +46,11 @@ const addToCart = async (event) => {
     } catch (error) {
         console.error('Error al agregar el producto al carrito:', error);
     }
+}
+
+const seeCart = async (event) => {
+    const cartId = event.target.dataset.id;
+    window.location.replace(`/myCart/${cartId}`)
 }
 
 addListeners();
