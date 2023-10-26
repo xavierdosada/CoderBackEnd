@@ -128,9 +128,12 @@ export const deleteProduct = async (req, res) => {
         const products = await product_repository.getProducts() //productos actualizados
 
         //envio un email al usuario premium dueño del producto
-        // if (productExist.rol === 'premium'){
-        //     sendEmail()
-        // }
+        const { owner, title } = productExist._doc
+        if (owner.role === 'premium'){
+            const subject = `Producto Eliminado`
+            const message = `Su producto "${title}" ha sido elimando`
+            sendEmail(owner.createdBy, subject, message)
+        }
 
         io.emit('updateproducts', products) //los envio por websockets al front
         res.status(200).send({message: statusDelete})
