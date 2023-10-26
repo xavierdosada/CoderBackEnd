@@ -60,7 +60,6 @@ export const myCart = async (req, res) => {
     const { cid } = req.params
     const cartById = await cart_repository.getCartsById(cid);
     const prods = cartById.products.toObject()
-    console.log(prods)
     res.render('cart', { prods })
 }
 
